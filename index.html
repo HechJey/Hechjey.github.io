@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Delitos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 2px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #d00000;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px;
+            background-color: #d00000;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button#policia {
+            background-color: #1e90ff; /* Azul */
+        }
+
+        button#bomberos {
+            background-color: #ff4500; /* Rojo anaranjado */
+        }
+
+        button#seguridad {
+            background-color: #32cd32; /* Verde */
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reporte de Delitos</h1>
+        <label for="location">Ubicación:</label>
+        <input type="text" id="location" name="location" placeholder="Obteniendo ubicación..." required readonly>
+
+        <div class="buttons">
+            <button id="policia">Enviar a Policía</button>
+            <button id="bomberos">Enviar a Bomberos</button>
+            <button id="seguridad">Enviar a Hospital</button>
+        </div>
+    </div>
+    <footer>
+        &copy; 2024 - Sistema de Reporte de Delitos
+    </footer>
+
+    <script>
+        const locationInput = document.getElementById('location');
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const { latitude, longitude } = position.coords;
+                    locationInput.value = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                },
+                error => {
+                    locationInput.value = 'No se pudo obtener la ubicación';
+                    console.error('Error al obtener la ubicación:', error);
+                }
+            );
+        } else {
+            locationInput.value = 'Geolocalización no soportada';
+        }
+
+        const buttons = document.querySelectorAll('button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const location = locationInput.value;
+                if (!location || location.includes('No se pudo obtener')) {
+                    alert('Error: No se puede enviar la ubicación porque no se obtuvo correctamente.');
+                } else {
+                    alert(`Ubicación enviada con éxito a ${button.textContent}.
+Ver en Google Maps: ${location}`);
+                    window.open(location, '_blank'); // Abrir ubicación en Google Maps
+                }
+            });
+        });
+    </script>
+</body>
+</html>
