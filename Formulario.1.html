@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Delitos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #d00000;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #d00000;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #a00000;
+        }
+
+        .evidence {
+            border: 2px dashed #d00000;
+            padding: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reporte de Delitos</h1>
+        <form id="crime-report-form" action="/save-crime-report" method="POST" enctype="multipart/form-data">
+            <label for="location">Ubicación:</label>
+            <input type="text" id="location" name="location" placeholder="Obteniendo ubicación..." required readonly>
+
+            <label for="date">Fecha y Hora:</label>
+            <input type="datetime-local" id="date" name="date" required readonly>
+
+            <label for="description">Descripción del delito:</label>
+            <textarea id="description" name="description" rows="5" placeholder="Describa lo sucedido" required></textarea>
+
+            <label for="evidence">Evidencia (fotos o videos):</label>
+            <input type="file" id="evidence" name="evidence" accept="image/*,video/*" class="evidence" multiple required>
+
+            <input type="submit" value="Enviar Reporte">
+        </form>
+    </div>
+    <footer>
+        &copy; 2024 - Sistema de Reporte de Delitos
+    </footer>
+
+    <script>
+        // Establecer fecha y hora actual automáticamente
+        const dateInput = document.getElementById('date');
+        dateInput.value = new Date().toISOString().slice(0, 16);
+
+        // Obtener la ubicación actual automáticamente
+        const locationInput = document.getElementById('location');
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const { latitude, longitude } = position.coords;
+                    locationInput.value = `Lat: ${latitude}, Lon: ${longitude}`;
+                },
+                error => {
+                    locationInput.value = 'No se pudo obtener la ubicación';
+                    console.error('Error al obtener la ubicación:', error);
+                }
+            );
+        } else {
+            locationInput.value = 'Geolocalización no soportada';
+        }
+
+        document.getElementById('crime-report-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita la acción por defecto del formulario
+
+            // Crear objeto FormData para manejar archivos
+            const formData = new FormData(this);
+
+            fetch('/save-crime-report', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Reporte enviado exitosamente.');
+                } else {
+                    alert('Error al enviar el reporte.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Hubo un problema al enviar el reporte.');
+            });
+        });
+    </script>
+</body>
+</html>
